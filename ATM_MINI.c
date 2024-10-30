@@ -17,8 +17,10 @@ typedef struct {
 int saldo = 1000000;
 Transaksi transaksi[MAX_TRANSACTIONS]; // Array untuk menyimpan riwayat transaksi
 int totalTransaksi = 0;                // Counter untuk jumlah transaksi
+int bahasa;                            // 0 untuk Bahasa Indonesia, 1 untuk English
 
 // Deklarasi Fungsi
+void pilihBahasa();
 void verifikasiPIN();
 void tampilkanMenu();
 void cekSaldo();
@@ -27,6 +29,8 @@ void setorTunai();
 void tampilkanRiwayatTransaksi();
 
 int main() {
+    pilihBahasa();
+    
     do {
         // Proses verifikasi PIN
         verifikasiPIN();
@@ -39,26 +43,43 @@ int main() {
     return 0;
 }
 
+// Fungsi untuk memilih bahasa
+void pilihBahasa() {
+    printf("Pilih Bahasa / Select Language:\n");
+    printf("0. Bahasa Indonesia\n");
+    printf("1. English\n");
+    printf("Pilihan Anda: ");
+    scanf("%d", &bahasa);
+}
+
 // Fungsi untuk melakukan verifikasi PIN dengan batas 3 kali percobaan
 void verifikasiPIN() {
     int kesempatan = MAX_TRIES;
     int inputPin;
 
+    if (bahasa == 0) printf("\n+++SELAMAT DATANG DI ATM+++\n");
+    else printf("\n+++WELCOME TO ATM+++\n");
+
     while (kesempatan--) {
-        printf("Masukkan PIN Anda: ");
+        if (bahasa == 0) printf("Masukkan PIN Anda: ");
+        else printf("Enter your PIN: ");
+        
         scanf("%d", &inputPin);
 
         if (inputPin == PIN_DEFAULT) {
-            printf("PIN Benar!\n");
+            if (bahasa == 0) printf("PIN Benar!\n");
+            else printf("PIN Correct!\n");
             return;
         }
 
         if (kesempatan == 0) {
-            printf("PIN Anda diblokir. Silakan hubungi bank.\n");
+            if (bahasa == 0) printf("PIN Anda diblokir. Silakan hubungi bank.\n");
+            else printf("Your PIN is blocked. Please contact the bank.\n");
             exit(0); // Mengakhiri program jika gagal 3 kali
         }
 
-        printf("PIN Salah! Kesempatan tersisa: %d\n", kesempatan);
+        if (bahasa == 0) printf("PIN Salah! Kesempatan tersisa: %d\n", kesempatan);
+        else printf("Incorrect PIN! Remaining attempts: %d\n", kesempatan);
     }
 }
 
@@ -68,8 +89,13 @@ void tampilkanMenu() {
     char lanjutTransaksi;
 
     do {
-        printf("\n--- Menu ATM ---\n");
-        printf("1. Cek Saldo\n2. Tarik Tunai\n3. Setor Tunai\n4. Lihat Riwayat Transaksi\n5. Keluar\nPilih opsi: ");
+        if (bahasa == 0) {
+            printf("\n--- Menu ATM ---\n");
+            printf("1. Cek Saldo\n2. Tarik Tunai\n3. Setor Tunai\n4. Lihat Riwayat Transaksi\n5. Keluar\nPilih opsi: ");
+        } else {
+            printf("\n--- ATM Menu ---\n");
+            printf("1. Check Balance\n2. Withdraw\n3. Deposit\n4. View Transaction History\n5. Exit\nChoose an option: ");
+        }
         scanf("%d", &pilihan);
 
         switch (pilihan) {
@@ -86,25 +112,23 @@ void tampilkanMenu() {
                 tampilkanRiwayatTransaksi();
                 break;
             case 5:
-                printf("Terima kasih telah menggunakan layanan ATM.\n");
-                exit(0); // Keluar dari program saat pengguna memilih opsi "Keluar"
+                if (bahasa == 0) printf("Terima kasih telah menggunakan layanan ATM. ;-)\n");
+                else printf("Thank you for using our ATM service. ;-)\n");
+                exit(0);
             default:
-                printf("Pilihan tidak valid, silakan coba lagi.\n");
+                if (bahasa == 0) printf("Pilihan tidak valid, silakan coba lagi.\n");
+                else printf("Invalid choice, please try again.\n");
         }
 
-        // Tanya apakah ingin melanjutkan transaksi
-        printf("Apakah Anda ingin melanjutkan transaksi? (y/t): ");
+        if (bahasa == 0) printf("\nApakah Anda ingin melanjutkan transaksi? (y/t): ");
+        else printf("\nDo you want to continue the transaction? (y/n): ");
+        
         scanf(" %c", &lanjutTransaksi);
 
-        // Jika jawabannya "t" (tidak), keluar dari loop menu
-        if (lanjutTransaksi == 't' || lanjutTransaksi == 'T') {
-            printf("Terima kasih telah menggunakan layanan ATM.\n");
+        if (lanjutTransaksi == 't' || lanjutTransaksi == 'T' || lanjutTransaksi == 'n' || lanjutTransaksi == 'N') {
+            if (bahasa == 0) printf("Terima kasih telah menggunakan layanan ATM. ;-)\n");
+            else printf("Thank you for using our ATM service. ;-)\n");
             exit(0);
-        }
-
-        // Jika jawabannya "y" (ya), meminta PIN lagi sebelum melanjutkan transaksi
-        if (lanjutTransaksi == 'y' || lanjutTransaksi == 'Y') {
-            verifikasiPIN();
         }
 
     } while (lanjutTransaksi == 'y' || lanjutTransaksi == 'Y');
@@ -112,28 +136,33 @@ void tampilkanMenu() {
 
 // Fungsi untuk mengecek saldo
 void cekSaldo() {
-    printf("Saldo Anda: Rp %d\n", saldo);
+    if (bahasa == 0) printf("Saldo Anda: Rp %d\n", saldo);
+    else printf("Your balance: Rp %d\n", saldo);
 }
 
 // Fungsi untuk melakukan tarik tunai
 void tarikTunai() {
     int jumlah;
-    printf("Masukkan jumlah uang yang ingin ditarik: Rp ");
+    if (bahasa == 0) printf("Masukkan jumlah uang yang ingin ditarik: Rp ");
+    else printf("Enter the amount you want to withdraw: Rp ");
+    
     scanf("%d", &jumlah);
 
     if (jumlah > saldo) {
-        printf("Saldo tidak cukup!\n");
+        if (bahasa == 0) printf("Saldo tidak cukup!\n");
+        else printf("Insufficient balance!\n");
     } else {
         saldo -= jumlah;
-        printf("Anda menarik Rp %d. Sisa saldo: Rp %d\n", jumlah, saldo);
+        if (bahasa == 0) printf("Anda menarik Rp %d. Sisa saldo: Rp %d\n", jumlah, saldo);
+        else printf("You withdrew Rp %d. Remaining balance: Rp %d\n", jumlah, saldo);
 
-        // Simpan transaksi ke dalam array
         if (totalTransaksi < MAX_TRANSACTIONS) {
-            strcpy(transaksi[totalTransaksi].jenis, "Tarik");
+            strcpy(transaksi[totalTransaksi].jenis, bahasa == 0 ? "Tarik" : "Withdraw");
             transaksi[totalTransaksi].jumlah = jumlah;
             totalTransaksi++;
         } else {
-            printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru.\n");
+            if (bahasa == 0) printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru.\n");
+            else printf("Transaction history is full, cannot save new transactions.\n");
         }
     }
 }
@@ -141,30 +170,37 @@ void tarikTunai() {
 // Fungsi untuk melakukan setor tunai
 void setorTunai() {
     int jumlah;
-    printf("Masukkan jumlah uang yang ingin disetor: Rp ");
+    if (bahasa == 0) printf("Masukkan jumlah uang yang ingin disetor: Rp ");
+    else printf("Enter the amount you want to deposit: Rp ");
+    
     scanf("%d", &jumlah);
 
     saldo += jumlah;
-    printf("Anda menyetor Rp %d. Saldo saat ini: Rp %d\n", jumlah, saldo);
+    if (bahasa == 0) printf("Anda menyetor Rp %d. Saldo saat ini: Rp %d\n", jumlah, saldo);
+    else printf("You deposited Rp %d. Current balance: Rp %d\n", jumlah, saldo);
 
-    // Simpan transaksi ke dalam array
     if (totalTransaksi < MAX_TRANSACTIONS) {
-        strcpy(transaksi[totalTransaksi].jenis, "Setor");
+        strcpy(transaksi[totalTransaksi].jenis, bahasa == 0 ? "Setor" : "Deposit");
         transaksi[totalTransaksi].jumlah = jumlah;
         totalTransaksi++;
     } else {
-        printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru.\n");
+        if (bahasa == 0) printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru.\n");
+        else printf("Transaction history is full, cannot save new transactions.\n");
     }
 }
 
 // Fungsi untuk menampilkan riwayat transaksi
 void tampilkanRiwayatTransaksi() {
     if (totalTransaksi == 0) {
-        printf("Belum ada transaksi yang dilakukan.\n");
+        if (bahasa == 0) printf("Belum ada transaksi yang dilakukan.\n");
+        else printf("No transactions have been made.\n");
     } else {
-        printf("\n--- Riwayat Transaksi ---\n");
+        if (bahasa == 0) printf("\n--- Riwayat Transaksi ---\n");
+        else printf("\n--- Transaction History ---\n");
+        
         for (int i = 0; i < totalTransaksi; i++) {
-            printf("%d. %s: Rp %d\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah);
+            if (bahasa == 0) printf("%d. %s: Rp %d\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah);
+            else printf("%d. %s: Rp %d\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah);
         }
     }
 }
