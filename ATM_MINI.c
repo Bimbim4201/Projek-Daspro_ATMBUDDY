@@ -43,13 +43,24 @@ int main() {
     return 0;
 }
 
-// Fungsi untuk memilih bahasa
+// Fungsi untuk memilih bahasa dengan validasi input
 void pilihBahasa() {
-    printf("Pilih Bahasa / Select Language:\n");
-    printf("0. Bahasa Indonesia\n");
-    printf("1. English\n");
-    printf("Pilihan Anda: ");
-    scanf("%d", &bahasa);
+    int validInput;
+    do {
+        printf("Pilih Bahasa / Select Language:\n");
+        printf("0. Bahasa Indonesia\n");
+        printf("1. English\n");
+        printf("Pilih Nomor => ");
+        
+        validInput = scanf("%d", &bahasa);
+        
+        // Cek jika input bukan angka atau bukan pilihan yang benar
+        if (validInput != 1 || (bahasa != 0 && bahasa != 1)) {
+            printf("Pilihan tidak valid. Silakan pilih lagi.\n");
+            // Membersihkan buffer untuk menghindari loop tanpa akhir saat input non-angka
+            while (getchar() != '\n'); 
+        }
+    } while (validInput != 1 || (bahasa != 0 && bahasa != 1));
 }
 
 // Fungsi untuk melakukan verifikasi PIN dengan batas 3 kali percobaan
@@ -57,8 +68,8 @@ void verifikasiPIN() {
     int kesempatan = MAX_TRIES;
     int inputPin;
 
-    if (bahasa == 0) printf("\n+++SELAMAT DATANG DI ATM+++\n");
-    else printf("\n+++WELCOME TO ATM+++\n");
+    if (bahasa == 0) printf("\n=====SELAMAT DATANG DI ATMBUDDY=====\n");
+    else printf("\n===WELCOME TO ATMBUDDY===\n");
 
     while (kesempatan--) {
         if (bahasa == 0) printf("Masukkan PIN Anda: ");
