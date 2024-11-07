@@ -26,7 +26,7 @@ void tampilkanMenu();
 void cekSaldo();
 void tarikTunai();
 void setorTunai();
-void tampilkanRiwayatTransaksi();
+void tampilkanRiwayatTransaksi(); // Mendeklarasikan fungsi untuk riwayat transaksi
 
 int main() {
     pilihBahasa();
@@ -68,8 +68,15 @@ void verifikasiPIN() {
     int kesempatan = MAX_TRIES;
     int inputPin;
 
-    if (bahasa == 0) printf("\n=====SELAMAT DATANG DI ATMBUDDY=====\n");
-    else printf("\n===WELCOME TO ATMBUDDY===\n");
+    if (bahasa == 0) {
+    printf("======================================\n");
+    printf("|    SELAMAT DATANG DI ATMBUDDY      |\n");
+    printf("======================================\n");
+    }else {
+    printf("======================================\n");
+    printf("|        WELCOME TO ATMBUDDY         |\n");
+    printf("======================================\n");
+    }
 
     while (kesempatan--) {
         if (bahasa == 0) printf("Masukkan PIN Anda: ");
@@ -101,11 +108,28 @@ void tampilkanMenu() {
 
     do {
         if (bahasa == 0) {
-            printf("\n--- Menu ATM ---\n");
-            printf("1. Cek Saldo\n2. Tarik Tunai\n3. Setor Tunai\n4. Lihat Riwayat Transaksi\n5. Keluar\nPilih opsi: ");
+            printf("====================================\n");
+            printf("|           Menu ATM               |\n");
+            printf("====================================\n");
+            printf("|        1. Cek Saldo              |\n");
+            printf("|        2. Tarik Tunai            |\n");
+            printf("|        3. Setor Tunai            |\n");
+            printf("|        4. Riwayat Transaksi      |\n");
+            printf("|        5. Keluar                 |\n");
+            printf("====================================\n");
+            printf("Pilih opsi: ");
+            
         } else {
-            printf("\n--- ATM Menu ---\n");
-            printf("1. Check Balance\n2. Withdraw\n3. Deposit\n4. View Transaction History\n5. Exit\nChoose an option: ");
+            printf("====================================\n");
+            printf("|            ATM Menu              |\n");
+            printf("====================================\n");
+            printf("|        1. Check Balance          |\n");
+            printf("|        2. Withdraw               |\n");
+            printf("|        3. Deposit                |\n");
+            printf("|        4. Transaction History    |\n");
+            printf("|        5. Exit                   |\n");
+            printf("====================================\n");
+            printf("Choose an option:");
         }
         scanf("%d", &pilihan);
 
