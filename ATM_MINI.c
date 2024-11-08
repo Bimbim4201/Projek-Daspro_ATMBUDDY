@@ -47,9 +47,12 @@ int main() {
 void pilihBahasa() {
     int validInput;
     do {
-        printf("Pilih Bahasa / Select Language:\n");
-        printf("0. Bahasa Indonesia\n");
-        printf("1. English\n");
+        printf("======================================\n");
+        printf("|   Pilih Bahasa / Select Language:  |\n");
+        printf("======================================\n");
+        printf("|    0. Bahasa Indonesia             |\n");
+        printf("|    1. English                      |\n");
+        printf("======================================\n");
         printf("Pilih Nomor => ");
         
         validInput = scanf("%d", &bahasa);
@@ -69,7 +72,7 @@ void verifikasiPIN() {
     int inputPin;
 
     if (bahasa == 0) {
-    printf("======================================\n");
+    printf("\n======================================\n");
     printf("|    SELAMAT DATANG DI ATMBUDDY      |\n");
     printf("======================================\n");
     }else {
@@ -91,8 +94,8 @@ void verifikasiPIN() {
         }
 
         if (kesempatan == 0) {
-            if (bahasa == 0) printf("PIN Anda diblokir. Silakan hubungi bank.\n");
-            else printf("Your PIN is blocked. Please contact the bank.\n");
+            if (bahasa == 0) printf("PIN Anda diblokir!. Silakan hubungi bank.\n");
+            else printf("Your PIN is blocked!. Please contact the bank.\n");
             exit(0); // Mengakhiri program jika gagal 3 kali
         }
 
@@ -108,7 +111,7 @@ void tampilkanMenu() {
 
     do {
         if (bahasa == 0) {
-            printf("====================================\n");
+            printf("\n====================================\n");
             printf("|           Menu ATM               |\n");
             printf("====================================\n");
             printf("|        1. Cek Saldo              |\n");
