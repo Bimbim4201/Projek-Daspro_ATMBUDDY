@@ -11,6 +11,7 @@
 typedef struct {
     char jenis[10];    // Jenis transaksi, misalnya "Tarik" atau "Setor"
     int jumlah;        // Jumlah uang yang ditarik atau disetor
+    char tujuan[20];  //tujuan transfer(nomor rekening atau nama bank)
 } Transaksi;
 
 // Deklarasi Variabel Global
@@ -27,6 +28,7 @@ void cekSaldo();
 void tarikTunai();
 void setorTunai();
 void tampilkanRiwayatTransaksi(); // Mendeklarasikan fungsi untuk riwayat transaksi
+void transferUang(); // Mendeklarasikan fungsi untuk transfer
 
 int main() {
     pilihBahasa();
@@ -117,8 +119,9 @@ void tampilkanMenu() {
             printf("|        1. Cek Saldo              |\n");
             printf("|        2. Tarik Tunai            |\n");
             printf("|        3. Setor Tunai            |\n");
-            printf("|        4. Riwayat Transaksi      |\n");
-            printf("|        5. Keluar                 |\n");
+            printf("|        4. Transfer Tunai         |\n");
+            printf("|        5. Riwayat Transaksi      |\n");
+            printf("|        6. Keluar                 |\n");
             printf("====================================\n");
             printf("Pilih opsi: ");
             
@@ -129,8 +132,9 @@ void tampilkanMenu() {
             printf("|        1. Check Balance          |\n");
             printf("|        2. Withdraw               |\n");
             printf("|        3. Deposit                |\n");
-            printf("|        4. Transaction History    |\n");
-            printf("|        5. Exit                   |\n");
+            printf("|        4. Transfer               |\n");
+            printf("|        5. Transaction History    |\n");
+            printf("|        6. Exit                   |\n");
             printf("====================================\n");
             printf("Choose an option:");
         }
@@ -147,9 +151,12 @@ void tampilkanMenu() {
                 setorTunai();
                 break;
             case 4:
-                tampilkanRiwayatTransaksi();
+                transferUang();
                 break;
             case 5:
+                tampilkanRiwayatTransaksi();
+                break;
+            case 6:
                 if (bahasa == 0) printf("Terima kasih telah menggunakan layanan ATM. ;-)\n");
                 else printf("Thank you for using our ATM service. ;-)\n");
                 exit(0);
@@ -224,6 +231,34 @@ void setorTunai() {
     } else {
         if (bahasa == 0) printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru.\n");
         else printf("Transaction history is full, cannot save new transactions.\n");
+    }
+}
+
+// Fungsi untuk mentransfer uang
+void transferUang() {
+  int jumlah;
+  char tujuan[20];
+
+  printf("Masukan nomor rekening tujuan: ");
+  scanf("%s", tujuan);
+  printf("Masukan Jumlah Uang Yang ingin di Transfer: Rp ");
+  scanf("%d", &jumlah);
+
+      if (jumlah > saldo) {
+        printf("Saldo tidak cukup untuk melakukan transfer.\n");
+    } else {
+        saldo -= jumlah;
+        printf("Anda telah mentransfer Rp %d ke rekening %s. Sisa saldo: Rp\n", jumlah, tujuan, saldo);
+
+        // Simpan transaksi
+        if (totalTransaksi < MAX_TRANSACTIONS) {
+          strcpy(transaksi[totalTransaksi].jenis, "Transfer");
+          transaksi[totalTransaksi].jumlah = jumlah;
+          strcpy(transaksi[totalTransaksi].tujuan, tujuan);
+          totalTransaksi++;
+        } else {
+            printf("Riwayat transaksi penuh, tidak dapat menyimpan transaksi baru\n");
+        }
     }
 }
 
