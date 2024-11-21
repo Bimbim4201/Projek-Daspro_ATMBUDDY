@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Deklarasi Konstanta
 #define PIN_DEFAULT 852
@@ -12,6 +13,7 @@ typedef struct {
     char jenis[10];    // Jenis transaksi, misalnya "Tarik" atau "Setor"
     int jumlah;        // Jumlah uang yang ditarik atau disetor
     char tujuan[20];    // tujuan transfer(nomor rekening)
+    char waktu[20]; // Waktu transaksi
 } Transaksi;
 
 // Deklarasi Variabel Global
@@ -125,7 +127,7 @@ void tampilkanMenu() {
             printf("====================================\n");
             printf("Pilih opsi: ");
         } else {
-            printf("====================================\n");
+            printf("\n====================================\n");
             printf("|            ATM Menu              |\n");
             printf("====================================\n");
             printf("|        1. Check Balance          |\n");
@@ -135,10 +137,9 @@ void tampilkanMenu() {
             printf("|        5. Transaction History    |\n");
             printf("|        6. Exit                   |\n");
             printf("====================================\n");
-            printf("Choose an option:");
+            printf("Choose an option: ");
         }
         scanf("%d", &pilihan);
-        
 
         switch (pilihan) {
             case 1:
@@ -229,6 +230,13 @@ void cekSaldo() {
     }
 }
 
+// Fungsi untuk mendapatkan waktu saat ini
+void dapatkanWaktu(char *buffer) {
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(buffer, 20, "%Y-%m-%d %H:%M:%S", t);
+}
+
 // Fungsi untuk melakukan tarik tunai
 void tarikTunai() {
     int jumlah;
@@ -247,6 +255,19 @@ void tarikTunai() {
     }
 
     scanf("%d", &jumlah);
+
+      if (jumlah <= 0) {
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Jumlah tidak valid!        |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|     Invalid amount!              |\n");
+            printf("====================================\n");
+        }
+        return; // Kembali tanpa memproses transaksi
+    }
 
     if (jumlah > saldo) {
         if (bahasa == 0) {
@@ -275,6 +296,7 @@ void tarikTunai() {
         if (totalTransaksi < MAX_TRANSACTIONS) {
             strcpy(transaksi[totalTransaksi].jenis, bahasa == 0 ? "Tarik" : "Withdraw");
             transaksi[totalTransaksi].jumlah = jumlah;
+            dapatkanWaktu(transaksi[totalTransaksi].waktu); //waktu transaksi
             totalTransaksi++;
         } else {
             if (bahasa == 0) {
@@ -310,6 +332,19 @@ void setorTunai() {
 
     scanf("%d", &jumlah);
 
+    if (jumlah <= 0) {
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Jumlah tidak valid!        |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|     Invalid amount!              |\n");
+            printf("====================================\n");
+        }
+        return; // Kembali tanpa memproses transaksi
+    }
+
     saldo += jumlah;
     if (bahasa == 0) {
         printf("====================================\n");
@@ -326,6 +361,7 @@ void setorTunai() {
     if (totalTransaksi < MAX_TRANSACTIONS) {
         strcpy(transaksi[totalTransaksi].jenis, bahasa == 0 ? "Setor" : "Deposit");
         transaksi[totalTransaksi].jumlah = jumlah;
+        dapatkanWaktu(transaksi[totalTransaksi].waktu); // waktu transaksi
         totalTransaksi++;
     } else {
         if (bahasa == 0) {
@@ -360,6 +396,19 @@ void transferUang() {
       printf("Enter the amount you want to transfer: Rp ");
       scanf("%d", &jumlah);
   }
+
+  if (jumlah <= 0) {
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Jumlah tidak valid!        |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|     Invalid amount!              |\n");
+            printf("====================================\n");
+        }
+        return; // Kembali tanpa memproses transaksi
+    }
       if (jumlah > saldo) {
         if (bahasa == 0) {
         printf("=============================================\n");
@@ -372,19 +421,21 @@ void transferUang() {
     } else {
         saldo -= jumlah;
         if (bahasa == 0) {
-        printf("=====================================================================\n");
-        printf("|Anda telah mentransfer Rp %d ke rekening %s. Sisa saldo: Rp % - 15d|\n", jumlah, tujuan, saldo);
-        printf("=====================================================================\n");
-        }else 
-        printf("=========================================================================\n");
-        printf("|You have transferred Rp %d to account %s. Remaining balance: Rp % - 15d|\n", jumlah, tujuan, saldo);
-        printf("=========================================================================\n");
+        printf("=======================================================================================\n");
+        printf("Anda telah mentransfer Rp %d ke rekening %s. Sisa saldo: Rp % - 15d\n", jumlah, tujuan, saldo);
+        printf("========================================================================================\n");
+        }else {
+        printf("==========================================================================================\n");
+        printf("You have transferred Rp %d to account %s. Remaining balance: Rp % - 15d\n", jumlah, tujuan, saldo);
+        printf("==========================================================================================\n");
+        }
 
         // Simpan transaksi
         if (totalTransaksi < MAX_TRANSACTIONS) {
           strcpy(transaksi[totalTransaksi].jenis, "Transfer");
           transaksi[totalTransaksi].jumlah = jumlah;
           strcpy(transaksi[totalTransaksi].tujuan, tujuan);
+          dapatkanWaktu(transaksi[totalTransaksi].waktu);   // waktu transaksi
           totalTransaksi++;
         } else {
             printf("===============================================================\n");
@@ -393,6 +444,7 @@ void transferUang() {
         }
     }
 }
+
 
 // Fungsi untuk menampilkan riwayat transaksi
 void tampilkanRiwayatTransaksi() {
@@ -419,9 +471,9 @@ void tampilkanRiwayatTransaksi() {
 
         for (int i = 0; i < totalTransaksi; i++) {
             if (bahasa == 0) {
-                printf("| %2d. %-10s: Rp %-15d |\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah);
+                printf("| %2d. %-10s: Rp %-15d | Waktu: %s\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah, transaksi[i].waktu);
             } else {
-                printf("| %2d. %-10s: Rp %-15d |\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah);
+                printf("| %2d. %-10s: Rp %-15d | Time: %s\n", i + 1, transaksi[i].jenis, transaksi[i].jumlah, transaksi[i].waktu);
             }
         }
 
