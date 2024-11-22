@@ -127,8 +127,13 @@ void verifikasiPIN() {
         percobaan++;
 
         if (ditemukan == 0) {
-            if (bahasa == 0) printf("Username atau PIN salah! Silakan coba lagi.\n");
-            else printf("Incorrect Username or PIN! Please try again.\n");
+            if (bahasa == 0) {
+                printf("Username atau PIN salah! Silakan coba lagi.\n");
+                printf("Sisa kesempatan: %d\n", MAX_TRIES - percobaan);
+            } else {
+                printf("Incorrect Username or PIN! Please try again.\n");
+                printf("Remaining attempts: %d\n", MAX_TRIES - percobaan);
+            }
         }
 
         // jika percobaan mencapai batas, maka program akan keluar
