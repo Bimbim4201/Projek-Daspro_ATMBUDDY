@@ -252,22 +252,59 @@ void tampilkanMenu() {
 }
 
 
-// Fungsi untuk mengecek saldo
 void cekSaldo() {
+    char username[20];
+    int userIndex = -1; // Indeks pengguna dalam array akun
+
+    // Meminta username pengguna
     if (bahasa == 0) {
         printf("\n====================================\n");
-        printf("|           Info Saldo             |\n");
+        printf("|       Info Saldo                |\n");
         printf("====================================\n");
-        printf("|   Saldo Anda: Rp %-15d|\n", saldo);
-        printf("====================================\n");
+        printf("| Masukkan username: ");
     } else {
         printf("\n====================================\n");
-        printf("|          Balance Info            |\n");
+        printf("|        Balance Info             |\n");
         printf("====================================\n");
-        printf("|   Your balance: Rp %-15d|\n", saldo);
+        printf("| Enter your username: ");
+    }
+
+    scanf("%s", username);
+
+    // Cari pengguna berdasarkan username
+    for (int i = 0; i < totalAkun; i++) {
+        if (strcmp(akun[i].username, username) == 0) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex == -1) {
+        // Jika username tidak ditemukan
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Username tidak ditemukan! |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|      Username not found!        |\n");
+            printf("====================================\n");
+        }
+        return;
+    }
+
+    // Menampilkan saldo terbaru pengguna
+    if (bahasa == 0) {
+        printf("====================================\n");
+        printf("|   Saldo Anda: Rp %-15d|\n", akun[userIndex].saldo);
+        printf("====================================\n");
+    } else {
+        printf("====================================\n");
+        printf("|   Your balance: Rp %-15d|\n", akun[userIndex].saldo);
         printf("====================================\n");
     }
 }
+
 
 void bacaAkunDariFile() {
     FILE *file = fopen("akun.txt", "r");
@@ -311,17 +348,50 @@ void tarikTunai() {
     char username[20];
     int jumlah;
     char waktu[20];  // Menyimpan waktu transaksi
+    int userIndex = -1; // Indeks pengguna dalam array akun
 
+    // Meminta username pengguna
     if (bahasa == 0) {
         printf("\n====================================\n");
         printf("|         Tarik Tunai              |\n");
         printf("====================================\n");
-        printf("| Masukkan jumlah uang yang ingin  |\n");
-        printf("| ditarik: Rp ");
+        printf("| Masukkan username: ");
     } else {
         printf("\n====================================\n");
         printf("|          Withdraw                |\n");
         printf("====================================\n");
+        printf("| Enter your username: ");
+    }
+
+    scanf("%s", username);
+
+    // Cari pengguna berdasarkan username
+    for (int i = 0; i < totalAkun; i++) {
+        if (strcmp(akun[i].username, username) == 0) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex == -1) {
+        // Jika username tidak ditemukan
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Username tidak ditemukan! |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|      Username not found!        |\n");
+            printf("====================================\n");
+        }
+        return;
+    }
+
+    // Meminta jumlah yang akan ditarik
+    if (bahasa == 0) {
+        printf("| Masukkan jumlah uang yang ingin  |\n");
+        printf("| ditarik: Rp ");
+    } else {
         printf("| Enter the amount you want to     |\n");
         printf("| withdraw: Rp ");
     }
@@ -335,13 +405,14 @@ void tarikTunai() {
             printf("====================================\n");
         } else {
             printf("====================================\n");
-            printf("|     Invalid amount!              |\n");
+            printf("|       Invalid amount!            |\n");
             printf("====================================\n");
         }
-        return; // Kembali tanpa memproses transaksi
+        return;
     }
 
-    if (jumlah > saldo) {
+    // Periksa saldo pengguna
+    if (jumlah > akun[userIndex].saldo) {
         if (bahasa == 0) {
             printf("====================================\n");
             printf("|       Saldo tidak cukup!         |\n");
@@ -351,59 +422,87 @@ void tarikTunai() {
             printf("|     Insufficient balance!        |\n");
             printf("====================================\n");
         }
+        return;
+    }
+
+    // Kurangi saldo pengguna
+    akun[userIndex].saldo -= jumlah;
+
+    // Menyimpan transaksi tarik tunai ke dalam array transaksi[]
+    dapatkanWaktu(waktu);  // Ambil waktu transaksi
+    strcpy(transaksi[totalTransaksi].jenis, "Tarik");
+    transaksi[totalTransaksi].jumlah = jumlah;
+    strcpy(transaksi[totalTransaksi].waktu, waktu);
+    totalTransaksi++;
+
+    // Simpan akun yang sudah diperbarui ke file
+    simpanAkunKeFile();
+
+    // Menampilkan saldo terbaru
+    if (bahasa == 0) {
+        printf("====================================\n");
+        printf("| Anda menarik Rp %-15d |\n", jumlah);
+        printf("| Sisa saldo: Rp %-15d |\n", akun[userIndex].saldo);
+        printf("====================================\n");
     } else {
-        saldo -= jumlah;  // Kurangi saldo setelah tarik tunai
-
-        // Menyimpan transaksi tarik tunai ke dalam array transaksi[]
-        dapatkanWaktu(waktu);  // Ambil waktu transaksi
-        strcpy(transaksi[totalTransaksi].jenis, "Tarik");
-        transaksi[totalTransaksi].jumlah = jumlah;
-        strcpy(transaksi[totalTransaksi].waktu, waktu);
-        totalTransaksi++;
-
-        // Update saldo pada akun pengguna yang sesuai
-        for (int i = 0; i < totalAkun; i++) {
-            if (strcmp(akun[i].username, username) == 0) {
-                akun[i].saldo = saldo;
-            }
-        }
-
-        // Simpan akun yang sudah diperbarui ke file
-        simpanAkunKeFile();
-
-        if (bahasa == 0) {
-            printf("====================================\n");
-            printf("| Anda menarik Rp %-15d |\n", jumlah);
-            printf("| Sisa saldo: Rp %-15d |\n", saldo);
-            printf("====================================\n");
-        } else {
-            printf("====================================\n");
-            printf("| You withdraw Rp %-15d  |\n", jumlah);
-            printf("| Remaining balance: Rp %-10d |\n", saldo);
-            printf("====================================\n");
-        }
+        printf("====================================\n");
+        printf("| You withdraw Rp %-15d  |\n", jumlah);
+        printf("| Remaining balance: Rp %-10d |\n", akun[userIndex].saldo);
+        printf("====================================\n");
     }
 }
 
 
 
 
-// Fungsi untuk melakukan setor tunai
 void setorTunai() {
     char username[20];
     int jumlah;
     char waktu[20];
+    int userIndex = -1; // Indeks pengguna dalam array akun
 
+    // Meminta username pengguna
     if (bahasa == 0) {
         printf("\n====================================\n");
         printf("|           Setor Tunai             |\n");
         printf("====================================\n");
-        printf("| Masukkan jumlah uang yang ingin  |\n");
-        printf("| disetor: Rp ");
+        printf("| Masukkan username: ");
     } else {
         printf("\n====================================\n");
         printf("|            Deposit               |\n");
         printf("====================================\n");
+        printf("| Enter your username: ");
+    }
+
+    scanf("%s", username);
+
+    // Cari pengguna berdasarkan username
+    for (int i = 0; i < totalAkun; i++) {
+        if (strcmp(akun[i].username, username) == 0) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex == -1) {
+        // Jika username tidak ditemukan
+        if (bahasa == 0) {
+            printf("====================================\n");
+            printf("|       Username tidak ditemukan! |\n");
+            printf("====================================\n");
+        } else {
+            printf("====================================\n");
+            printf("|      Username not found!        |\n");
+            printf("====================================\n");
+        }
+        return;
+    }
+
+    // Meminta jumlah yang akan disetor
+    if (bahasa == 0) {
+        printf("| Masukkan jumlah uang yang ingin  |\n");
+        printf("| disetor: Rp ");
+    } else {
         printf("| Enter the amount you want to     |\n");
         printf("| deposit: Rp ");
     }
@@ -417,43 +516,39 @@ void setorTunai() {
             printf("====================================\n");
         } else {
             printf("====================================\n");
-            printf("|     Invalid amount!              |\n");
+            printf("|       Invalid amount!            |\n");
             printf("====================================\n");
         }
-        return; // Kembali tanpa memproses transaksi
+        return;
     }
 
-    saldo += jumlah;  // Tambah saldo setelah setor tunai
+    // Tambah saldo pada akun pengguna
+    akun[userIndex].saldo += jumlah;
 
     // Menyimpan transaksi setor tunai ke dalam array transaksi[]
-    dapatkanWaktu(waktu);  // Ambil waktu transaksi
+    dapatkanWaktu(waktu); // Ambil waktu transaksi
     strcpy(transaksi[totalTransaksi].jenis, "Setor");
     transaksi[totalTransaksi].jumlah = jumlah;
     strcpy(transaksi[totalTransaksi].waktu, waktu);
     totalTransaksi++;
 
-    // Update saldo pada akun pengguna yang sesuai
-    for (int i = 0; i < totalAkun; i++) {
-        if (strcmp(akun[i].username, username) == 0) {
-            akun[i].saldo = saldo;
-        }
-    }
-
     // Simpan akun yang sudah diperbarui ke file
     simpanAkunKeFile();
 
+    // Menampilkan saldo terbaru
     if (bahasa == 0) {
         printf("====================================\n");
         printf("| Anda menyetor Rp %-15d |\n", jumlah);
-        printf("| Saldo saat ini: Rp %-10d |\n", saldo);
+        printf("| Saldo saat ini: Rp %-10d |\n", akun[userIndex].saldo);
         printf("====================================\n");
     } else {
         printf("====================================\n");
         printf("| You deposited Rp %-15d |\n", jumlah);
-        printf("| Current balance: Rp %-10d   |\n", saldo);
+        printf("| Current balance: Rp %-10d   |\n", akun[userIndex].saldo);
         printf("====================================\n");
     }
 }
+
 
 
 void transferUang() {
@@ -592,8 +687,12 @@ void transferUang() {
 
 void tampilkanRiwayatTransaksi() {
     if (totalTransaksi == 0) {
+        if (bahasa == 0) {
         printf("Tidak ada transaksi.\n");
+        } else
+        printf("No transactions.\n");
     } else {
+        if (bahasa == 0){
         printf("\n=====================================\n");
         printf("|     Riwayat Transaksi            |\n");
         printf("=====================================\n");
@@ -605,5 +704,19 @@ void tampilkanRiwayatTransaksi() {
                    transaksi[i].waktu);
         }
         printf("=====================================\n");
+        }
+        else{
+        printf("\n=====================================\n");
+        printf("|     Riwayat Transaksi            |\n");
+        printf("=====================================\n");
+        for (int i = 0; i < totalTransaksi; i++) {
+            printf("%s | Rp %d | %s | %s\n", 
+                   transaksi[i].jenis, 
+                   transaksi[i].jumlah, 
+                   transaksi[i].tujuan, 
+                   transaksi[i].waktu);
+        }
+        printf("=====================================\n");
+    }
     }
 }
