@@ -4,7 +4,6 @@
 #include <time.h>
 
 // Deklarasi Konstanta
-#define PIN_DEFAULT 852
 #define MAX_TRIES 3
 #define MAX_TRANSACTIONS 100 // Batas maksimal transaksi yang dapat disimpan
 
